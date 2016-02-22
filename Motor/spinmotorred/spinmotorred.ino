@@ -22,7 +22,7 @@ double Setpoint = 6; //motorspeed
 
 //Define the aggressive and conservative Tuning Parameters
 
-double kP = 0.12285, kI = 10.57321, kD = 0;
+double kP = 0.12285, kI = 10.57321, kD = 0; //test
 //double kP =10, kI=1, kD=0;
 
 
