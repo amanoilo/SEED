@@ -10,18 +10,19 @@ http://arduino.cc/en/Guide/Libraries
 
 #define trigPin 12                                    // Pin 12 trigger output
 #define echoPin 2                                     // Pin 2 Echo input
-#define onBoardLED 13                                 // Pin 13 onboard LED
+#define SEND 13                                 // Pin 13 onboard LED
 #define echo_int 0                                    // Interrupt id for echo pulse
 
 #define TIMER_US 50                                   // 50 uS timer duration 
 #define TICK_COUNTS 4000                              // 200 mS worth of timer ticks
+#define SLOW_DISTANCE 150                            // distance to start slowing in cm
 
 volatile long echo_start = 0;                         // Records start of echo pulse 
 volatile long echo_end = 0;                           // Records end of echo pulse
 volatile long echo_duration = 0;                      // Duration - difference between end and start
 volatile int trigger_time_count = 0;                  // Count down counter to trigger pulse time
 volatile long range_flasher_counter = 0;              // Count down counter for flashing distance LED
-int distance_to-slow=100;                             // distance to start slowing in cm
+
 
 // ----------------------------------
 // setup() routine called first.
@@ -32,7 +33,7 @@ void setup()
 {
   pinMode(trigPin, OUTPUT);                           // Trigger pin set to output
   pinMode(echoPin, INPUT);                            // Echo pin set to input
-  pinMode(onBoardLED, OUTPUT);                        // Onboard LED pin set to output
+  pinMode(SEND, OUTPUT);                        // Onboard LED pin set to output
   
   Timer1.initialize(TIMER_US);                        // Initialise timer 1
   Timer1.attachInterrupt( timerIsr );                 // Attach interrupt to the timer service routine 
@@ -47,14 +48,23 @@ void setup()
 // ----------------------------------
 void loop()
 {
-    Serial.println(echo_duration / 58);               // Print the distance in centimeters
+    int distanceInCm = echo_duration/58;
+    Serial.print(distanceInCm);               // Print the distance in centimeters
     //delay(100);                                       // every 100 mS
-    if ( (eco_duration/58) < distance_to_slow){ 
-        //insert PI controller here to slow down //////////////////////////////////////////
-    }
-     if ( (eco_duration/58) < (3){ 
+    
+     if ( (distanceInCm) < (20)){ 
         //insert PI controller here to STOP//////////////////////////////////////////////
-    }
+        Serial.println("DISTANCE IS NOT OK");
+      }
+      
+     else if ( (distanceInCm) < SLOW_DISTANCE){ 
+        Serial.println("DISTANCE IS OK");
+        //insert PI controller here to slow down //////////////////////////////////////////
+      }
+      else {
+        Serial.println("OUT OF RANGE");
+        
+      }
 }
 
 // --------------------------
@@ -142,7 +152,7 @@ void distance_flasher()
            range_flasher_counter = 25000;              // If out of range use a default
          }
          
-         digitalWrite( onBoardLED, digitalRead( onBoardLED ) ^ 1 );   // Toggle the onboard LED
+         digitalWrite( SEND, digitalRead( SEND ) ^ 1 );   // Toggle the onboard LED
       }
 }
 

@@ -20,6 +20,7 @@ byte addresses[][6] = {"1NodE","2NodE"};
 
 // Used to control whether this node is sending or receiving
 bool role = 0;
+int sent=9; // default stop command
 
 void setup() {
   Serial.begin(115200);
@@ -62,7 +63,7 @@ if (role == 1)  {
 //     }
 
 
-      int  sent = 5;                             // Take the time, and send it.  This will block until complete
+      sent = Serial.read();                            // Take the time, and send it.  This will block until complete
      if (!radio.write( &sent, sizeof( int) )){
        Serial.println(F("failed"));
      }
@@ -89,12 +90,29 @@ if (role == 1)  {
         unsigned long time = micros();
 
 
+        
         // Spew it
         Serial.print(F("Sent "));
         Serial.print(sent);
         Serial.print(F(", Got response "));
-        Serial.print(rec);
-        
+        switch(rec){
+        case 0:
+          // drive forward
+          Serial.println("forward");
+          break;
+        case 1:
+        // stop
+          Serial.println("stop");
+          break;
+        case 2:
+        // drive reverse
+          Serial.println("reverse");
+          break;
+        default:
+        // stop
+         Serial.println("default stop");
+      }
+       
     }
 
     // Try again 1s later
@@ -121,7 +139,23 @@ if (role == 1)  {
       radio.write( &rec, sizeof(unsigned long) );              // Send the final one back.      
       radio.startListening();                                       // Now, resume listening so we catch the next packets.     
       Serial.print(F("Sent response "));
-      Serial.println(rec);  
+       switch(rec){
+        case 0:
+          // drive forward
+          Serial.println("forward");
+          break;
+        case 1:
+        // stop
+          Serial.println("stop");
+          break;
+        case 2:
+        // drive reverse
+          Serial.println("reverse");
+          break;
+        default:
+        // stop
+         Serial.println("default stop");
+      }  
    }
  }
 
